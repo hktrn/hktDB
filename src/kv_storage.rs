@@ -18,4 +18,8 @@ impl KVStorage {
     pub fn get(&self, key: &str) -> Option<&String> {
         self.store.get(key)
     }
+
+    pub fn remove(&mut self, key: &str) -> Option<String> {
+        self.store.remove(key)
+    }
 }

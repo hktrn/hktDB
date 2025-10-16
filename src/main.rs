@@ -7,7 +7,7 @@ fn main() {
     let mut kv_storage = KVStorage::new();
 
     loop {
-        println!("Enter command (set, get, exit):");
+        println!("Enter command (set, get, remove, exit):");
         let mut command = String::new();
         io::stdout().flush().unwrap();
         io::stdin().read_line(&mut command).unwrap();
@@ -36,6 +36,16 @@ fn main() {
 
                 match kv_storage.get(key) {
                     Some(value) => println!("Value: {}", value),
+                    None => println!("Key not found."),
+                }
+            }
+            "remove" => {
+                println!("Enter key:");
+                let mut key = String::new();
+                io::stdin().read_line(&mut key).unwrap();
+                let key = key.trim();
+                match kv_storage.remove(key) {
+                    Some(value) => println!("Removed value: {}", value),
                     None => println!("Key not found."),
                 }
             }
