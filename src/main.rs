@@ -1,10 +1,16 @@
 use std::io::{self, Write};
+use anyhow::Result;
 
 mod kv_storage;
 use kv_storage::KVStorage;
 
-fn main() {
+fn main() -> Result<()> {
     let mut kv_storage = KVStorage::new();
+    
+    if let Err(e) = kv_storage.load_from_file("database.json") {
+        eprintln!("Warning: Could not load existing data: {}", e);
+        println!("Starting with empty database.");
+    }
 
     loop {
         println!("Enter command (set, get, remove, exit):");
@@ -25,8 +31,10 @@ fn main() {
                 io::stdin().read_line(&mut value).unwrap();
                 let value = value.trim().to_string();
 
-                kv_storage.set(key, value);
-                println!("Key-value pair set.");
+                match kv_storage.set(key, value) {
+                    Ok(_) => println!("Key-value pair set."),
+                    Err(e) => eprintln!("Error setting key-value pair: {}", e),
+                }
             }
             "get" => {
                 println!("Enter key:");
@@ -45,12 +53,15 @@ fn main() {
                 io::stdin().read_line(&mut key).unwrap();
                 let key = key.trim();
                 match kv_storage.remove(key) {
-                    Some(value) => println!("Removed value: {}", value),
-                    None => println!("Key not found."),
+                    Ok(Some(value)) => println!("Removed value: {}", value),
+                    Ok(None) => println!("Key not found."),
+                    Err(e) => eprintln!("Error removing key: {}", e),
                 }
             }
             "exit" => break,
             _ => println!("Unknown command."),
         }
     }
+    
+    Ok(())
 }
