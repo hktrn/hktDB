@@ -26,6 +26,19 @@ fn main() -> Result<()> {
                 io::stdin().read_line(&mut key).unwrap();
                 let key = key.trim().to_string();
 
+                if kv_storage.contains_key(&key) {
+                    println!("Key '{}' already exists with value: {}", key, kv_storage.get(&key).unwrap());
+                    println!("Do you want to overwrite it? (y/n):");
+                    let mut confirmation = String::new();
+                    io::stdin().read_line(&mut confirmation).unwrap();
+                    let confirmation = confirmation.trim().to_lowercase();
+                    
+                    if confirmation != "y" && confirmation != "yes" {
+                        println!("Operation cancelled.");
+                        continue;
+                    }
+                }
+
                 println!("Enter value:");
                 let mut value = String::new();
                 io::stdin().read_line(&mut value).unwrap();

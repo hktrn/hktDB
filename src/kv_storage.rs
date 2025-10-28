@@ -24,14 +24,19 @@ impl KVStorage {
         }
     }
 
-    pub fn set(&mut self, key: String, value: String) -> Result<()> {
+    pub fn set(&mut self, key: String, value: String) -> Result<bool> {
+        let key_existed = self.store.contains_key(&key);
         self.store.insert(key, value);
         self.save_to_file(&self.file_path)?;
-        Ok(())
+        Ok(key_existed)
     }
 
     pub fn get(&self, key: &str) -> Option<&String> {
         self.store.get(key)
+    }
+
+    pub fn contains_key(&self, key: &str) -> bool {
+        self.store.contains_key(key)
     }
 
     pub fn remove(&mut self, key: &str) -> Result<Option<String>> {
